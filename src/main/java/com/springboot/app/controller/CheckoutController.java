@@ -9,6 +9,8 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.web.servlet.view.RedirectView;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -22,8 +24,8 @@ public class CheckoutController {
     }
 
 
-    @PostMapping(value = "/payment", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public void createPaymentLink(@RequestParam int tongTien,HttpServletResponse httpServletResponse) {
+@GetMapping(value = "/payment")
+    public RedirectView createPaymentLink(@RequestParam int tongTien, HttpServletResponse httpServletResponse) {
         try {
             final String productName = "Thanh toan hoa don";
             final String description = "Thanh toan VTCoffee";
@@ -44,12 +46,13 @@ public class CheckoutController {
             JsonNode data = payOS.createPaymentLink(paymentData);
 
             String checkoutUrl = data.get("checkoutUrl").asText();
-            httpServletResponse.sendRedirect(checkoutUrl);
-  System.out.print(checkoutUrl);
-            httpServletResponse.setHeader("Location", checkoutUrl);
-            httpServletResponse.setStatus(HttpServletResponse.SC_FOUND);
+            System.out.print(checkoutUrl);
+            return new RedirectView(checkoutUrl);
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return new RedirectView("localhost:3000");
+
     }
+
 }
